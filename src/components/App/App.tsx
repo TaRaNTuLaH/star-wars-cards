@@ -1,7 +1,12 @@
 import React from "react";
 
-function App() {
-  return <div>Hello world</div>;
-}
+import { GameBoard } from "../GameBoard/GameBoard";
 
+function App() {
+  return (
+    <div>
+      <GameBoard />
+    </div>
+  );
+}
 export default App;

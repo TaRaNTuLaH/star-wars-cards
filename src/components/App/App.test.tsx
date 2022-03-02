@@ -4,8 +4,8 @@ import "@testing-library/jest-dom";
 
 import App from "./App";
 
-test("renders hello world", () => {
+test("renders App", () => {
   render(<App />);
-  const helloWorld = screen.getByText(/Hello world/i);
-  expect(helloWorld).toBeInTheDocument();
+  expect(screen.getByText("This is Game Board!")).toBeInTheDocument();
+  expect(screen.getByText("some button")).toBeInTheDocument();
 });
