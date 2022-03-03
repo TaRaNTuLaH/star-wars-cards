@@ -6,6 +6,5 @@ import App from "./App";
 
 test("renders App", () => {
   render(<App />);
-  expect(screen.getByText("This is Game Board!")).toBeInTheDocument();
-  expect(screen.getByText("some button")).toBeInTheDocument();
+  expect(screen.getByText("Play again")).toBeInTheDocument();
 });
