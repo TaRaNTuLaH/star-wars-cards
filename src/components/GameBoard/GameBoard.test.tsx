@@ -6,6 +6,6 @@ import { GameBoard } from "./GameBoard";
 
 test("renders Game Board", () => {
   render(<GameBoard />);
-  const helloWorld = screen.getByText(/This is Game Board!/i);
-  expect(helloWorld).toBeInTheDocument();
+  const button = screen.getByText(/Start game/i);
+  expect(button).toBeInTheDocument();
 });
