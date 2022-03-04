@@ -7,9 +7,6 @@ export const api = axios.create({
 });
 
 export async function apiGet<T>(url: string) {
-  try {
-    return await api.get<T>(url);
-  } catch (err) {
-    console.error(err);
-  }
+  const response = await api.get<T>(url);
+  return response.data;
 }
