@@ -15,3 +15,25 @@ export interface StarshipResponse extends CommonResponseInterface {
   consumables: string;
   pilots: string[];
 }
+
+export interface Starship
+  extends Omit<
+    StarshipResponse,
+    | "cost_in_credits"
+    | "length"
+    | "crew"
+    | "passengers"
+    | "hyperdrive_rating"
+    | "cargo_capacity"
+    | "created"
+    | "edited"
+  > {
+  cost_in_credits: number;
+  length: number;
+  crew: number;
+  passengers: number;
+  hyperdrive_rating: number;
+  cargo_capacity: number;
+  created: Date;
+  edited: Date;
+}
