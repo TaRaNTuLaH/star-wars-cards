@@ -1,1 +1,0 @@
-import { apiGet } from "../index";
