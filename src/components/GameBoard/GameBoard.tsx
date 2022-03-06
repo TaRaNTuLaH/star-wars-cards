@@ -3,11 +3,12 @@ import styled from "@emotion/styled";
 
 import { Button } from "../Button/Button";
 import { Card } from "../Card/Card";
-import { getPeople } from "../../api/swapi/people.api";
+import { getPeople, getPerson } from "../../api/swapi/people.api";
 import { getStarships } from "../../api/swapi/starships.api";
 import { Response } from "../../interfaces/Common.interface";
 import { StarshipResponse } from "../../interfaces/Starship.interface";
 import { PersonResponse } from "../../interfaces/Person.interface";
+import { getRandomObjectProperty, mapPersonProperties } from "../../utils";
 
 let GameBoardContainer = styled.div({
   display: "flex",
@@ -35,6 +36,10 @@ export const GameBoard: React.FC = () => {
 
   const startGame = async () => {
     getCardsCount(gameType.Starships);
+    const person = await getPerson(2);
+    const randomProperty = getRandomObjectProperty(person);
+    console.log(randomProperty);
+    mapPersonProperties(person);
   };
 
   const playAgain = async () => {};

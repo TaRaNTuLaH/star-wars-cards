@@ -13,3 +13,11 @@ export interface PersonResponse extends CommonResponseInterface {
   starships: string[];
   vehicles: string[];
 }
+
+export interface Person
+  extends Omit<PersonResponse, "height" | "mass" | "created" | "edited"> {
+  height: number;
+  mass: number;
+  created: Date;
+  edited: Date;
+}
