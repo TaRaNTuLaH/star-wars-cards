@@ -19,6 +19,7 @@ import { Scoreboard } from "../Scoreboard/Scoreboard";
 const GameBoardContainer = styled.div({
   display: "flex",
   justifyContent: "center",
+  flexDirection: "column",
   alignItems: "center",
   backgroundColor: "black",
   height: "100%",
@@ -28,22 +29,36 @@ const GameBoardContainer = styled.div({
   textTransform: "uppercase",
 });
 
+const CardsContainer = styled("div")({
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-around",
+});
+
+const ButtonsContainer = styled("div")({
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-around",
+  margin: "20px 0",
+});
+
 export enum gameType {
   "Starships" = "starships",
   "People" = "people",
 }
 
 export type CardsObject = {
-  firstCard: {};
-  secondCard: {};
+  firstCard: PersonResponse | StarshipResponse | null;
+  secondCard: PersonResponse | StarshipResponse | null;
 };
 export const GameBoard: React.FC = () => {
   const [gameMode, setGameMode] = useState<gameType>();
+  const [property, setProperty] = useState<string>();
   const [cardsCount, setCardsCount] = useState<number>(0);
   const [fightValues, setFightValues] = useState<number[]>([]);
   const [cards, setCards] = useState<CardsObject>({
-    firstCard: {},
-    secondCard: {},
+    firstCard: null,
+    secondCard: null,
   });
   const [score, setScore] = useState<{
     firstPlayer: number;
@@ -95,6 +110,7 @@ export const GameBoard: React.FC = () => {
         firstPersonMappedProperties
       );
       const randomProperty = selectRandomObjectProperty(eligibleProperties);
+      setProperty(randomProperty);
       const firstValue = firstPersonMappedProperties[
         randomProperty as keyof typeof firstPersonMappedProperties
       ] as number;
@@ -118,6 +134,7 @@ export const GameBoard: React.FC = () => {
         firstStarshipMappedProperties
       );
       const randomProperty = selectRandomObjectProperty(eligibleProperties);
+      setProperty(randomProperty);
       const firstValue = firstStarshipMappedProperties[
         randomProperty as keyof typeof firstStarshipMappedProperties
       ] as number;
@@ -155,7 +172,7 @@ export const GameBoard: React.FC = () => {
     },
     [score.firstPlayer, score.secondPlayer]
   );
-  //trigger SWC-7 workflow, cause of network issue
+
   const playAgain = () => {
     Fight(fightValues[0], fightValues[1]);
   };
@@ -163,22 +180,35 @@ export const GameBoard: React.FC = () => {
     <GameBoardContainer>
       <Scoreboard score={score} />
       <p>Current game mode: {gameMode}</p>
-      <Button
-        onClick={() => {
-          setGameMode(gameType.Starships);
-        }}
-        text={gameType.Starships}
-      />
-      <Button
-        onClick={() => {
-          setGameMode(gameType.People);
-        }}
-        text={gameType.People}
-      />
-      <Card data={cards.firstCard} />
-      <Card data={cards.secondCard} />
-      <Button disabled={!gameMode} onClick={startGame} text="Start game" />
-      <Button onClick={playAgain} text="Play again" />
+      <p>Fighting property: {property}</p>
+      <ButtonsContainer>
+        <Button
+          onClick={() => {
+            setGameMode(gameType.Starships);
+          }}
+          text={gameType.Starships}
+        />
+        <Button
+          onClick={() => {
+            setGameMode(gameType.People);
+          }}
+          text={gameType.People}
+        />
+      </ButtonsContainer>
+      {cards.firstCard && cards.secondCard ? (
+        <CardsContainer>
+          <Card data={cards.firstCard} />
+          <Card data={cards.secondCard} />
+        </CardsContainer>
+      ) : null}
+      <ButtonsContainer>
+        <Button disabled={!gameMode} onClick={startGame} text="Start game" />
+        <Button
+          disabled={!fightValues[0] && !fightValues[1]}
+          onClick={playAgain}
+          text="Play again"
+        />
+      </ButtonsContainer>
     </GameBoardContainer>
   );
 };
