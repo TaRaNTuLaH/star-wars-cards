@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { Card } from "./Card";
 
 test("renders card", () => {
-  render(<Card text="card" />);
-  const start = screen.getByText(/card/i);
-  expect(start).toBeInTheDocument();
+  render(<Card data={{ name: "someName" }} />);
+  const someName = screen.getByText(/someName/i);
+  expect(someName).toBeInTheDocument();
 });
