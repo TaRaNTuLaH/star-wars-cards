@@ -1,9 +1,8 @@
 import { Person, PersonResponse } from "./interfaces/Person.interface";
 import { Starship, StarshipResponse } from "./interfaces/Starship.interface";
 
-export const getRandomObjectProperty = (object: object): string => {
-  const keys = Object.keys(object);
-  return keys[Math.floor(Math.random() * keys.length)];
+export const selectRandomObjectProperty = (properties: string[]): string => {
+  return properties[Math.floor(Math.random() * properties.length)];
 };
 
 //this could be achieved through typescript as well
@@ -49,4 +48,16 @@ export const mapStarshipProperties = (starship: StarshipResponse): Starship => {
     starship_class: starship.starship_class,
     url: starship.url,
   };
+};
+
+export const getEligibleProperties = (object: object) => {
+  const keys = Object.keys(object);
+  const eligibleProperties: string[] = [];
+  keys.forEach((key: string) => {
+    //we want the fight to happen only between number data types
+    if (typeof object[key as keyof object] === "number") {
+      eligibleProperties.push(key);
+    }
+  });
+  return eligibleProperties;
 };
