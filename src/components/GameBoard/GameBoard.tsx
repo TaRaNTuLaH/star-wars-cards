@@ -10,6 +10,7 @@ import { StarshipResponse } from "../../interfaces/Starship.interface";
 import { PersonResponse } from "../../interfaces/Person.interface";
 import {
   getEligibleProperties,
+  getRandomIds,
   mapPersonProperties,
   mapStarshipProperties,
   selectRandomObjectProperty,
@@ -56,6 +57,7 @@ export const GameBoard: React.FC = () => {
   const [property, setProperty] = useState<string>();
   const [cardsCount, setCardsCount] = useState<number>(0);
   const [fightValues, setFightValues] = useState<number[]>([]);
+  const [winner, setWinner] = useState<string>();
   const [cards, setCards] = useState<CardsObject>({
     firstCard: null,
     secondCard: null,
@@ -83,19 +85,9 @@ export const GameBoard: React.FC = () => {
     return response.count;
   };
 
-  //Pick random number from range of 1 to limit
-  const getRandomIds = (limit: number) => {
-    let firstNumber: number;
-    let secondNumber: number;
-    do {
-      firstNumber = Math.floor(Math.random() * limit) + 1;
-      secondNumber = Math.floor(Math.random() * limit) + 1;
-    } while (firstNumber === secondNumber);
-
-    return [firstNumber, secondNumber];
-  };
   //mmmmmmm delicious pasta! mamma mia!
   const startGame = async () => {
+    setWinner("");
     const randomIds = getRandomIds(cardsCount);
     if (gameMode === gameType.People) {
       const firstPerson = await getPerson(randomIds[0]);
@@ -161,12 +153,18 @@ export const GameBoard: React.FC = () => {
           firstPlayer: score.firstPlayer + 1,
           secondPlayer: score.secondPlayer,
         });
+        setWinner("first player won");
       }
       if (firstValue < secondValue) {
         setScore({
           firstPlayer: score.firstPlayer,
           secondPlayer: score.secondPlayer + 1,
         });
+        setWinner("second player won");
+      }
+
+      if (firstValue === secondValue) {
+        setWinner("draw");
       }
       return;
     },
@@ -181,6 +179,7 @@ export const GameBoard: React.FC = () => {
       <Scoreboard score={score} />
       <p>Current game mode: {gameMode}</p>
       <p>Fighting property: {property}</p>
+      {winner ? <p>Outcome: {winner}</p> : null}
       <ButtonsContainer>
         <Button
           onClick={() => {
