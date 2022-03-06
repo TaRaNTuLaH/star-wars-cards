@@ -79,7 +79,7 @@ export const GameBoard: React.FC = () => {
 
     return [firstNumber, secondNumber];
   };
-
+  //mmmmmmm delicious pasta! mamma mia!
   const startGame = async () => {
     const randomIds = getRandomIds(cardsCount);
     if (gameMode === gameType.People) {
