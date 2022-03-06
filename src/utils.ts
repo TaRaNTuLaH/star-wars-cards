@@ -61,3 +61,15 @@ export const getEligibleProperties = (object: object) => {
   });
   return eligibleProperties;
 };
+
+//Pick random number from range of 1 to limit
+export const getRandomIds = (limit: number) => {
+  let firstNumber: number;
+  let secondNumber: number;
+  do {
+    firstNumber = Math.floor(Math.random() * limit) + 1;
+    secondNumber = Math.floor(Math.random() * limit) + 1;
+  } while (firstNumber === secondNumber);
+
+  return [firstNumber, secondNumber];
+};

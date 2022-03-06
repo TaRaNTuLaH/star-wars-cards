@@ -10,6 +10,7 @@ import { StarshipResponse } from "../../interfaces/Starship.interface";
 import { PersonResponse } from "../../interfaces/Person.interface";
 import {
   getEligibleProperties,
+  getRandomIds,
   mapPersonProperties,
   mapStarshipProperties,
   selectRandomObjectProperty,
@@ -19,6 +20,7 @@ import { Scoreboard } from "../Scoreboard/Scoreboard";
 const GameBoardContainer = styled.div({
   display: "flex",
   justifyContent: "center",
+  flexDirection: "column",
   alignItems: "center",
   backgroundColor: "black",
   height: "100%",
@@ -28,22 +30,37 @@ const GameBoardContainer = styled.div({
   textTransform: "uppercase",
 });
 
+const CardsContainer = styled("div")({
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-around",
+});
+
+const ButtonsContainer = styled("div")({
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-around",
+  margin: "20px 0",
+});
+
 export enum gameType {
   "Starships" = "starships",
   "People" = "people",
 }
 
 export type CardsObject = {
-  firstCard: {};
-  secondCard: {};
+  firstCard: PersonResponse | StarshipResponse | null;
+  secondCard: PersonResponse | StarshipResponse | null;
 };
 export const GameBoard: React.FC = () => {
   const [gameMode, setGameMode] = useState<gameType>();
+  const [property, setProperty] = useState<string>();
   const [cardsCount, setCardsCount] = useState<number>(0);
   const [fightValues, setFightValues] = useState<number[]>([]);
+  const [winner, setWinner] = useState<string>();
   const [cards, setCards] = useState<CardsObject>({
-    firstCard: {},
-    secondCard: {},
+    firstCard: null,
+    secondCard: null,
   });
   const [score, setScore] = useState<{
     firstPlayer: number;
@@ -68,19 +85,9 @@ export const GameBoard: React.FC = () => {
     return response.count;
   };
 
-  //Pick random number from range of 1 to limit
-  const getRandomIds = (limit: number) => {
-    let firstNumber: number;
-    let secondNumber: number;
-    do {
-      firstNumber = Math.floor(Math.random() * limit) + 1;
-      secondNumber = Math.floor(Math.random() * limit) + 1;
-    } while (firstNumber === secondNumber);
-
-    return [firstNumber, secondNumber];
-  };
   //mmmmmmm delicious pasta! mamma mia!
   const startGame = async () => {
+    setWinner("");
     const randomIds = getRandomIds(cardsCount);
     if (gameMode === gameType.People) {
       const firstPerson = await getPerson(randomIds[0]);
@@ -95,6 +102,7 @@ export const GameBoard: React.FC = () => {
         firstPersonMappedProperties
       );
       const randomProperty = selectRandomObjectProperty(eligibleProperties);
+      setProperty(randomProperty);
       const firstValue = firstPersonMappedProperties[
         randomProperty as keyof typeof firstPersonMappedProperties
       ] as number;
@@ -118,6 +126,7 @@ export const GameBoard: React.FC = () => {
         firstStarshipMappedProperties
       );
       const randomProperty = selectRandomObjectProperty(eligibleProperties);
+      setProperty(randomProperty);
       const firstValue = firstStarshipMappedProperties[
         randomProperty as keyof typeof firstStarshipMappedProperties
       ] as number;
@@ -144,18 +153,24 @@ export const GameBoard: React.FC = () => {
           firstPlayer: score.firstPlayer + 1,
           secondPlayer: score.secondPlayer,
         });
+        setWinner("first player won");
       }
       if (firstValue < secondValue) {
         setScore({
           firstPlayer: score.firstPlayer,
           secondPlayer: score.secondPlayer + 1,
         });
+        setWinner("second player won");
+      }
+
+      if (firstValue === secondValue) {
+        setWinner("draw");
       }
       return;
     },
     [score.firstPlayer, score.secondPlayer]
   );
-  //trigger SWC-7 workflow, cause of network issue
+
   const playAgain = () => {
     Fight(fightValues[0], fightValues[1]);
   };
@@ -163,22 +178,36 @@ export const GameBoard: React.FC = () => {
     <GameBoardContainer>
       <Scoreboard score={score} />
       <p>Current game mode: {gameMode}</p>
-      <Button
-        onClick={() => {
-          setGameMode(gameType.Starships);
-        }}
-        text={gameType.Starships}
-      />
-      <Button
-        onClick={() => {
-          setGameMode(gameType.People);
-        }}
-        text={gameType.People}
-      />
-      <Card data={cards.firstCard} />
-      <Card data={cards.secondCard} />
-      <Button disabled={!gameMode} onClick={startGame} text="Start game" />
-      <Button onClick={playAgain} text="Play again" />
+      <p>Fighting property: {property}</p>
+      {winner ? <p>Outcome: {winner}</p> : null}
+      <ButtonsContainer>
+        <Button
+          onClick={() => {
+            setGameMode(gameType.Starships);
+          }}
+          text={gameType.Starships}
+        />
+        <Button
+          onClick={() => {
+            setGameMode(gameType.People);
+          }}
+          text={gameType.People}
+        />
+      </ButtonsContainer>
+      {cards.firstCard && cards.secondCard ? (
+        <CardsContainer>
+          <Card data={cards.firstCard} />
+          <Card data={cards.secondCard} />
+        </CardsContainer>
+      ) : null}
+      <ButtonsContainer>
+        <Button disabled={!gameMode} onClick={startGame} text="Start game" />
+        <Button
+          disabled={!fightValues[0] && !fightValues[1]}
+          onClick={playAgain}
+          text="Play again"
+        />
+      </ButtonsContainer>
     </GameBoardContainer>
   );
 };
